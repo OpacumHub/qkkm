@@ -4,7 +4,9 @@ use Bitrix\Main\Application;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\EventManager;
 use qkkm\d7\OptionsTable;
+use qkkm\d7\EventHandler;
 
 Loc::loadMessages(__FILE__);
 
@@ -34,10 +36,14 @@ class qkkm_d7 extends CModule
     {
         ModuleManager::registerModule($this->MODULE_ID);
         $this->installDB();
+        $eventManager = EventManager::getInstance();
+        $eventManager->registerEventHandler('sale', 'OnSaleStatusOrderChange', $this->MODULE_ID, '\\qkkm\\d7\\EventHandler', 'OnSaleStatusOrder');
     }
 
     public function doUninstall()
     {
+        $eventManager = EventManager::getInstance();
+        $eventManager->UnregisterEventHandler('sale', 'OnSaleStatusOrderChange', $this->MODULE_ID, '\\qkkm\\d7\\EventHandler', 'OnSaleStatusOrder');
         $this->uninstallDB();
         ModuleManager::unRegisterModule($this->MODULE_ID);
     }
@@ -57,5 +63,20 @@ class qkkm_d7 extends CModule
             $connection = Application::getInstance()->getConnection();
             $connection->dropTable(OptionsTable::getTableName());
         }
+    }
+
+    function InstallEvents()
+    {
+        //RegisterModuleDependences('sale', 'OnSaleStatusOrderChange', $this->MODULE_ID, '\\qkkm\\d7\RegisterModuleDependences', 'OnSaleStatusOrder');
+        //$eventManager = \Bitrix\Main\EventManager::getInstance();
+        //$eventManager->registerEventHandler('sale', 'OnSaleStatusOrderChange', $this->MODULE_ID, '\\qkkm\\d7\\EventHandler', 'OnSaleStatusOrder');
+        //RegisterModuleDependences('sale', 'OnSaleStatusOrderChange', $this->MODULE_ID, '\\qkkm\\d7\\EventHandler', 'OnSaleStatusOrder');
+    }
+
+    function UnInstallEvents()
+    {
+        //$eventManager = \Bitrix\Main\EventManager::getInstance();
+        //$eventManager->UnregisterEventHandler('sale', 'OnSaleStatusOrderChange', $this->MODULE_ID, '\\qkkm\\d7\\EventHandler', 'OnSaleStatusOrder');
+        //UnRegisterModuleDependences('sale', 'OnSaleStatusOrderChange', $this->MODULE_ID, '\\qkkm\\d7\\EventHandler', 'OnSaleStatusOrder');
     }
 }
